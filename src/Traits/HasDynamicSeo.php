@@ -257,6 +257,6 @@ trait HasDynamicSeo
     }
 }
 
-if (!class_exists('Rank212\LaravelSeo\Traits\HasDynamicSeo')) {
+if (!trait_exists('Rank212\LaravelSeo\Traits\HasDynamicSeo', false)) {
     class_alias(HasDynamicSeo::class, 'Rank212\LaravelSeo\Traits\HasDynamicSeo');
 }

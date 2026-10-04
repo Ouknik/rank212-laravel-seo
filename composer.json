@@ -3,6 +3,9 @@
     "description": "Zero-friction Headless SEO Automation Client Package for Laravel E-Commerce Stores",
     "type": "library",
     "license": "MIT",
+    "replace": {
+        "seosaas/laravel-seo": "self.version"
+    },
     "authors": [
         {
             "name": "Rank212 Team",
@@ -24,7 +27,6 @@
     },
     "autoload": {
         "psr-4": {
-            "Rank212\\LaravelSeo\\": "src/",
             "SeoSaas\\LaravelSeo\\": "src/"
         }
     },

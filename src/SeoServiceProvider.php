@@ -8,6 +8,8 @@ use SeoSaas\LaravelSeo\Commands\SyncAllSeoCommand;
 use SeoSaas\LaravelSeo\Services\SeoApiClient;
 use SeoSaas\LaravelSeo\View\Components\Tags;
 
+if (!class_exists(SeoServiceProvider::class, false)) {
+
 class SeoServiceProvider extends ServiceProvider
 {
     /**
@@ -86,6 +88,8 @@ class SeoServiceProvider extends ServiceProvider
     }
 }
 
-if (!class_exists('Rank212\LaravelSeo\SeoServiceProvider')) {
+}
+
+if (!class_exists('Rank212\LaravelSeo\SeoServiceProvider', false)) {
     class_alias(SeoServiceProvider::class, 'Rank212\LaravelSeo\SeoServiceProvider');
 }
