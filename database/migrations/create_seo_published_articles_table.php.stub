@@ -1,0 +1,46 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('seo_published_articles', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('store_id')->index();
+            $table->unsignedBigInteger('remote_article_id')->index();
+            $table->string('idempotency_key', 128)->unique();
+            $table->string('content_version_hash', 64);
+            $table->string('slug')->index();
+            $table->string('title');
+            $table->string('h1');
+            $table->longText('content_html');
+            $table->string('meta_title')->nullable();
+            $table->text('meta_description')->nullable();
+            $table->string('primary_keyword')->nullable();
+            $table->json('secondary_keywords')->nullable();
+            $table->string('featured_image_url', 2048)->nullable();
+            $table->timestamp('received_at')->nullable();
+            $table->timestamp('published_at')->nullable();
+            $table->string('published_url', 2048)->nullable();
+            $table->string('status', 32)->default('received');
+            $table->timestamps();
+
+            $table->unique(['store_id', 'remote_article_id'], 'seo_pub_store_remote_art_unique');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('seo_published_articles');
+    }
+};

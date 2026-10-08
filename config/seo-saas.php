@@ -70,4 +70,25 @@ return [
         'retry_times' => (int) env('SEO_SAAS_RETRY_TIMES', 2),
         'retry_sleep_ms' => (int) env('SEO_SAAS_RETRY_SLEEP_MS', 500),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Publishing Integration Contract (Step 4 Foundation)
+    |--------------------------------------------------------------------------
+    |
+    | Non-delivering contract foundation. Remains disabled by default.
+    | Dedicated publish secret required per store (never falls back to API key).
+    |
+    */
+    'publishing' => [
+        'enabled' => (bool) env('RANK212_PUBLISHING_ENABLED', env('SEO_SAAS_PUBLISHING_ENABLED', false)),
+        'auto_publish' => (bool) env('RANK212_AUTO_PUBLISH', false),
+        'store_id' => env('RANK212_STORE_ID', env('SEO_SAAS_STORE_ID', null)) !== null
+            ? (int) env('RANK212_STORE_ID', env('SEO_SAAS_STORE_ID', null))
+            : null,
+        'secret' => env('RANK212_PUBLISH_SECRET', env('SEO_SAAS_PUBLISH_SECRET', null)),
+        'route_prefix' => env('RANK212_PUBLISH_ROUTE_PREFIX', 'api/rank212'),
+        'blog_prefix' => env('RANK212_BLOG_PREFIX', 'blog'),
+        'tolerance_seconds' => (int) env('RANK212_SIGNATURE_TOLERANCE', 300),
+    ],
 ];
