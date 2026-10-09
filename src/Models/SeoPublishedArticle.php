@@ -104,18 +104,82 @@ class SeoPublishedArticle extends Model
         ];
     }
 
+    public function getReadingTimeMinutes(): int
+    {
+        $wordCount = str_word_count(strip_tags($this->content_html ?: ''));
+        return max(1, (int) ceil($wordCount / 200));
+    }
+
+    public function getTableOfContents(): array
+    {
+        if (empty($this->content_html)) {
+            return [];
+        }
+
+        $toc = [];
+        if (preg_match_all('/<h2[^>]*>(.*?)<\/h2>/is', $this->content_html, $matches)) {
+            foreach ($matches[1] as $idx => $content) {
+                $title = trim(strip_tags($content));
+                if (!empty($title)) {
+                    $slug = Str::slug($title);
+                    $toc[] = [
+                        'id'    => 'section-' . ($idx + 1) . '-' . $slug,
+                        'title' => $title,
+                    ];
+                }
+            }
+        }
+
+        return $toc;
+    }
+
+    public function getRenderedContentHtml(): string
+    {
+        if (empty($this->content_html)) {
+            return '';
+        }
+
+        $idx = 0;
+        return preg_replace_callback('/<h2([^>]*)>(.*?)<\/h2>/is', function ($matches) use (&$idx) {
+            $idx++;
+            $attributes = $matches[1];
+            $content = $matches[2];
+            $title = trim(strip_tags($content));
+            $id = 'section-' . $idx . '-' . Str::slug($title);
+
+            if (str_contains($attributes, 'id=')) {
+                return "<h2{$attributes}>{$content}</h2>";
+            }
+
+            return "<h2 id=\"{$id}\"{$attributes}>{$content}</h2>";
+        }, $this->content_html);
+    }
+
     public function getSeoSchemaJson(): array
     {
+        $canonicalUrl = $this->published_url ?: url('/blog/' . $this->slug);
+        $siteName = config('app.name', 'Boutique');
+
         $schema = [
             '@context'         => 'https://schema.org',
             '@type'            => 'Article',
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id'   => $canonicalUrl,
+            ],
             'headline'         => $this->h1 ?: $this->title,
             'description'      => $this->getSeoMetaDescription(),
             'datePublished'    => $this->published_at?->toIso8601String(),
             'dateModified'     => ($this->updated_at ?? $this->published_at)?->toIso8601String(),
-            'mainEntityOfPage' => [
-                '@type' => 'WebPage',
-                '@id'   => $this->published_url ?: url('/blog/' . $this->slug),
+            'author'           => [
+                '@type' => 'Organization',
+                'name'  => $siteName,
+                'url'   => url('/'),
+            ],
+            'publisher'        => [
+                '@type' => 'Organization',
+                'name'  => $siteName,
+                'url'   => url('/'),
             ],
         ];
 
